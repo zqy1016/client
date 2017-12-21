@@ -13,6 +13,7 @@ import com.qiyukf.openapi.session.model.ApplyStaffResult;
 import com.qiyukf.openapi.session.model.CommonResult;
 import com.qiyukf.openapi.session.model.Session;
 import com.qiyukf.openapi.session.util.StringUtil;
+import com.qq.weixin.mp.aes.WXBizMsgCrypt;
 import org.apache.http.util.TextUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,8 +87,7 @@ public class OfficialAccountController {
     }
 
     /**
-     * 处理来自微信的HTTP请求。
-     * 此处处理微信公众号，需要改为企业微信
+     * 处理来自企业微信的HTTP请求。
      * @param signature
      * @param timestamp
      * @param nonce
@@ -99,29 +99,30 @@ public class OfficialAccountController {
     @RequestMapping(value = "/recv_wx")
     @ResponseBody
     public String onWxMessage(
-            @RequestParam(value = "signature", required = false) String signature,
+            @RequestParam(value = "msg_signature", required = false) String signature,
             @RequestParam(value = "timestamp", required = false) String timestamp,
             @RequestParam(value = "nonce", required = false) String nonce,
             @RequestParam(value = "echostr", required = false) String echoStr,
             HttpServletRequest request,
             InputStream is) {
         try {
+            //这里本应该先验证签名，再判断echostr，但是微信官方给的方法中已封装好验签，所以无需重复验签。
+
+            WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(Constants.WX_TOKEN,Constants.WX_ENCODING_AESKEY,Constants.WX_CORP_ID);
+
             if (TextUtils.isEmpty(echoStr)) {
                 // 收到消息
                 String msg = StringUtil.isToString(is);
-                logger.debug("msg content" + msg);
-
-                // 解析XML， 分离消息来源，内容
-                return parseWxMessage(msg);
+                //解密消息
+                String sMsg = wxcpt.DecryptMsg(signature, timestamp, nonce, msg);
+                logger.debug("msg content" + sMsg);
+                // 分离处理消息
+                return parseWxMessage(sMsg);
             } else {
-                // 验证url
-                String sha1 = SHA1.getSHA1(Constants.WX_TOKEN, timestamp, nonce);
-                logger.debug("verify url: " + sha1 + " - " + signature + " - " + echoStr);
-                if (signature.equals(sha1)) {
-                    return echoStr;
-                } else {
-                    return "";
-                }
+                //解密echoStr
+                String sEchoStr = wxcpt.VerifyURL(signature, timestamp,nonce, echoStr);
+                logger.debug("verify url: " + " - " + signature + " - " + echoStr);
+                return sEchoStr;
             }
         } catch (Throwable e) {
             logger.warn("onWxMessage error, " + e);

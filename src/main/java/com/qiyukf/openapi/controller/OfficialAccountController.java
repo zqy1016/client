@@ -36,7 +36,7 @@ import java.io.StringReader;
  * Async HTTP request controller。
  */
 @Controller
-@RequestMapping(value = {"/wxoatest"}, produces = {"application/json;charset=UTF-8"})
+@RequestMapping(value = {"/api"}, produces = {"application/json;charset=UTF-8"})
 public class OfficialAccountController {
 
     private Logger logger = Logger.getLogger(OfficialAccountController.class);
@@ -111,6 +111,7 @@ public class OfficialAccountController {
             WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(Constants.WX_TOKEN,Constants.WX_ENCODING_AESKEY,Constants.WX_CORP_ID);
 
             if (TextUtils.isEmpty(echoStr)) {
+                logger.debug("echoStr:null");
                 // 收到消息
                 String msg = StringUtil.isToString(is);
                 //解密消息
@@ -119,6 +120,10 @@ public class OfficialAccountController {
                 // 分离处理消息
                 return parseWxMessage(sMsg);
             } else {
+                logger.debug("echoStr:" + echoStr);
+                logger.debug("signature:" + signature);
+                logger.debug("timestamp:" + timestamp);
+                logger.debug("nonce:" + nonce);
                 //解密echoStr
                 String sEchoStr = wxcpt.VerifyURL(signature, timestamp,nonce, echoStr);
                 logger.debug("verify url: " + " - " + signature + " - " + echoStr);
@@ -176,6 +181,7 @@ public class OfficialAccountController {
         if ("text".equals(msgType)) {
             String content = xmlTextContent(root, "Content");
             if (("RG".equalsIgnoreCase(content) || "人工".equals(content)) && !sessionManager.isInSession(fromUser)) {
+                //如果fromUser不存在于session中，并且消息内容为RG或人工，则进入请求分配人工客服处理逻辑
                 ApplyStaffInfo staffInfo = new ApplyStaffInfo();
                 staffInfo.setUid(fromUser);
                 staffInfo.setStaffType(1);

@@ -107,13 +107,9 @@ public class OfficialAccountController {
             InputStream is) {
         try {
             //这里本应该先验证签名，再判断echostr，但是微信官方给的方法中已封装好验签，所以无需重复验签。
-            logger.debug("token:"+Constants.WX_TOKEN);
-            logger.debug("AesKye:"+Constants.WX_ENCODING_AESKEY);
-            logger.debug("CorpId:"+Constants.WX_CORP_ID);
             WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(Constants.WX_TOKEN,Constants.WX_ENCODING_AESKEY,Constants.WX_CORP_ID);
 
             if (TextUtils.isEmpty(echoStr)) {
-                logger.debug("echoStr:null");
                 // 收到消息
                 String msg = StringUtil.isToString(is);
                 //解密消息
@@ -122,10 +118,6 @@ public class OfficialAccountController {
                 // 分离处理消息
                 return parseWxMessage(sMsg);
             } else {
-                logger.debug("echoStr:" + echoStr);
-                logger.debug("signature:" + signature);
-                logger.debug("timestamp:" + timestamp);
-                logger.debug("nonce:" + nonce);
                 //解密echoStr
                 String sEchoStr = wxcpt.VerifyURL(signature, timestamp,nonce, echoStr);
                 logger.debug("verify url: " + " - " + signature + " - " + echoStr);

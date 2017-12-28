@@ -1,4 +1,4 @@
-package com.qq.weixin.mp.aes;
+package com.qiyukf.openapi.controller.wxaes;
 
 import java.util.ArrayList;
 

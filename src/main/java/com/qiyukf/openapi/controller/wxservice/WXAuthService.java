@@ -43,7 +43,7 @@ public class WXAuthService {
             return;
         }
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s";
-        url = String.format(url, Constants.WX_APP_ID, Constants.WX_APP_SECRET);
+        url = String.format(url, Constants.WX_CORP_ID, Constants.WX_CORP_SECRET);
         try {
             String ret = HttpClientPool.getInstance().get(url);
             JSONObject json = JSONObject.parseObject(ret);

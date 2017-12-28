@@ -6,17 +6,16 @@
 
 // ------------------------------------------------------------------------
 
-package com.qq.weixin.mp.aes;
-
-import java.io.StringReader;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+package com.qiyukf.openapi.controller.wxaes;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.StringReader;
 
 /**
  * XMLParse class
@@ -29,9 +28,9 @@ class XMLParse {
 	 * 提取出xml数据包中的加密消息
 	 * @param xmltext 待提取的xml字符串
 	 * @return 提取出的加密消息字符串
-	 * @throws AesException 
+	 * @throws AesException
 	 */
-	public static Object[] extract(String xmltext) throws AesException     {
+	public static Object[] extract(String xmltext) throws AesException {
 		Object[] result = new Object[3];
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

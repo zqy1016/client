@@ -1,4 +1,4 @@
-package com.qq.weixin.mp.aes;
+package com.qiyukf.openapi.controller.wxaes;
 
 @SuppressWarnings("serial")
 public class AesException extends Exception {

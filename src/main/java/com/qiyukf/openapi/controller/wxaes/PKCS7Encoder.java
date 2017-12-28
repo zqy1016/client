@@ -6,7 +6,7 @@
 
 // ------------------------------------------------------------------------
 
-package com.qq.weixin.mp.aes;
+package com.qiyukf.openapi.controller.wxaes;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;

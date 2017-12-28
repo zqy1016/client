@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.qiyukf.openapi.controller.wxservice.WXAuthService;
 import com.qiyukf.openapi.controller.wxservice.WXUserService;
 import com.qiyukf.openapi.controller.wxservice.WxMessageService;
-import com.qiyukf.openapi.controller.wxutil.SHA1;
+//import com.qiyukf.openapi.controller.wxutil.SHA1;
 import com.qiyukf.openapi.controller.wxutil.WXOpenException;
 import com.qiyukf.openapi.session.constant.OpenApiTags;
 import com.qiyukf.openapi.session.model.ApplyStaffInfo;
@@ -13,7 +13,7 @@ import com.qiyukf.openapi.session.model.ApplyStaffResult;
 import com.qiyukf.openapi.session.model.CommonResult;
 import com.qiyukf.openapi.session.model.Session;
 import com.qiyukf.openapi.session.util.StringUtil;
-import com.qq.weixin.mp.aes.WXBizMsgCrypt;
+import com.qiyukf.openapi.controller.wxaes.WXBizMsgCrypt;
 import org.apache.http.util.TextUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,7 +107,9 @@ public class OfficialAccountController {
             InputStream is) {
         try {
             //这里本应该先验证签名，再判断echostr，但是微信官方给的方法中已封装好验签，所以无需重复验签。
-
+            logger.debug("token:"+Constants.WX_TOKEN);
+            logger.debug("AesKye:"+Constants.WX_ENCODING_AESKEY);
+            logger.debug("CorpId:"+Constants.WX_CORP_ID);
             WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(Constants.WX_TOKEN,Constants.WX_ENCODING_AESKEY,Constants.WX_CORP_ID);
 
             if (TextUtils.isEmpty(echoStr)) {

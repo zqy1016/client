@@ -6,15 +6,20 @@ import com.qiyukf.openapi.session.SessionClient;
 import com.qiyukf.openapi.session.model.ApplyStaffInfo;
 import com.qiyukf.openapi.session.model.ApplyStaffResult;
 import com.qiyukf.openapi.session.model.CommonResult;
-import com.qiyukf.openapi.session.util.QiyuPushCheckSum;
-import com.qq.weixin.mp.aes.WXBizMsgCrypt;
+import com.qiyukf.openapi.controller.wxaes.WXBizMsgCrypt;
 import org.testng.annotations.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.MessageDigest;
+import java.io.StringReader;
 import java.security.NoSuchAlgorithmException;
 
 /**
@@ -115,40 +120,48 @@ public class ClientTest {
 
     @Test(priority = 11)
     public void testForwardWxMessage() {
+        String sToken = "zhouqingyu";
+        String sCorpID = "ww58a61eadc9f605f7";
+        String sEncodingAESKey = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG";
+        String sReqMsgSig = "e7bd548fc9a938c73d0b6870981398b3b69cd2f9";
+        // String sReqTimeStamp = HttpUtils.ParseUrl("timestamp");
+        String sReqTimeStamp = "1511598098";
+        // String sReqNonce = HttpUtils.ParseUrl("nonce");
+        String sReqNonce = "1038862710";
+        // post请求的密文数据
+        // sReqData = HttpUtils.PostData();
+        String sReqData = "<xml><ToUserName><![CDATA[ww58a61eadc9f605f7]]></ToUserName><Encrypt><![CDATA[POHiCMwJw7un/P4qcp6EJIhoDPVCgiTVE2HbO0Yc7Fu8+HDq8vfRzRjSHl5pNaRyxKIiQmcPzM43QPncMEzqS1kunZ/tSRrrwo0MOy8R5JSTeRvo1DrtGRZ1cdKo/l/bxdwL9JI2tODnASKvZ2y/iwP6GLsrbPpYUJl9SO4BXCy8RMSpq4PV9gAboFv0T8qi4U/CqjlXOdKHHNwYBp13XmSASzj44ki6d6/gZwJilq5LgElsoFAJqvkPDjRJXeMN/q/uws3VhHOVDY/lxK6qFCW1CBXZm6qq6vnfZ8bivog1BIeuTDDjJQzM1I9ibxeldSUsyQunAb6VGvw1YvoHBT6fugSMYmftqodwGKEMxmJHy+8aOUt7rnUGQNTTQero12/QUZ4Pm0VT7a7PBYxZnVRE4IGGdX/jOLiPRwouQtg=]]></Encrypt><AgentID><![CDATA[1000002]]></AgentID></xml>";
+
+        try {
+            WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(sToken, sEncodingAESKey, sCorpID);
+
+            String sMsg = wxcpt.DecryptMsg(sReqMsgSig, sReqTimeStamp, sReqNonce, sReqData);
+            System.out.println("after decrypt msg: " + sMsg);
+            // TODO: 解析出明文xml标签的内容进行处理
+            // For example:
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            StringReader sr = new StringReader(sMsg);
+            InputSource is = new InputSource(sr);
+            Document document = db.parse(is);
+
+            Element root = document.getDocumentElement();
+            NodeList nodelist1 = root.getElementsByTagName("Content");
+            String Content = nodelist1.item(0).getTextContent();
+            System.out.println("Content：" + Content);
+
+        } catch (Exception e) {
+            // TODO
+            // 解密失败，失败原因请查看异常
+            e.printStackTrace();
+        }
 
     }
 
     @Test(priority = 12)
     public void testNew(){
         String content = "abcd1234ABCD";
-        String md5 = "abcd1234ABCD";
-        long time = 121212;
 
-
-        String checksum = QiyuPushCheckSum.encode(content, md5, time);
-
-        System.out.println("checksum明文:" + content+md5+time);
-        System.out.println("checksum:" + checksum);
-
-/*
-        try {
-
-           for(int i=0 ;i<content.getBytes().length;i++){
-                System.out.print("Arr["+ i +"]:" + content.getBytes()[i]+",");
-            }
-            System.out.println();
-
-            MessageDigest messageDigest = MessageDigest.getInstance("sha1");
-            messageDigest.update(content.getBytes());
-            for(int i=0 ;i<messageDigest.digest().length;i++){
-                System.out.print("Arr["+ i +"]:" + messageDigest.digest()[i]+",");
-            }
-            System.out.println();
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-*/
     }
 
     @Test(priority = 13)
@@ -160,10 +173,10 @@ public class ClientTest {
 
         String sEchoStr; //需要返回的明文
 
-        String sVerifyMsgSig = "d0d817051171bdbec7c0c870c183c4b982786903";
-        String sVerifyTimeStamp = "1513846766";
-        String sVerifyNonce = "196443370";
-        String sVerifyEchoStr = "UdGNveUq7feybSntKY2ivmkVRvk9xwD/PPqV4Z55wUipDGi6Gg6GvAz8ZN2GkexANXvMfGG9OqtqnycOiNaL0g==";
+        String sVerifyMsgSig = "ab2d5eb465e156abcbe675e02538619e2883611b";
+        String sVerifyTimeStamp = "1514352375";
+        String sVerifyNonce = "340831515";
+        String sVerifyEchoStr = "r21Qw/8bnB3Ie6Xi1B/ddbAPop11Waeg1ion5VH5fpsN7+nvftsGiZjPggJmZtsiLtVe8RzRJn9OiYy957uDgg==";
 
         try {
             WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(sToken,sEncodingAESKey,sCorpID);

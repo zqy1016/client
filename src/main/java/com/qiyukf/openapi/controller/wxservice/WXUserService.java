@@ -34,7 +34,7 @@ public class WXUserService {
     public String queryWxUserNick(String openId) throws IOException {
         String nick = userNickMap.get(openId);
         if (TextUtils.isEmpty(nick)) {
-            String url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=%s&openid=%s&lang=zh_CN";
+            String url = "https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token=%s&userid=%s";
             url = String.format(url, wxAuthService.queryAccessToken(), openId);
 
             String res = HttpClientPool.getInstance().get(url);
@@ -42,7 +42,7 @@ public class WXUserService {
                 return null;
             } else {
                 JSONObject json = JSONObject.parseObject(res);
-                nick = json.getString("nickname");
+                nick = json.getString("name");
                 userNickMap.put(openId, nick);
                 // 更新到七鱼
                 updateWxUserToQiyu(openId, json);

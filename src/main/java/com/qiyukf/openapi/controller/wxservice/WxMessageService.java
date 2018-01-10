@@ -19,6 +19,7 @@ public class WxMessageService {
 
     private static final String TAG_TO_USER = "touser";
     private static final String TAG_MSG_TYPE = "msgtype";
+    private static final String TAG_AGENTID = "agentid";
     private static final int defaultRetryTimes = 2;
     private static final String sendRetryQueue = "mq_send_retry_queue";
 
@@ -46,6 +47,7 @@ public class WxMessageService {
         JSONObject json = new JSONObject();
         json.put(TAG_TO_USER, openId);
         json.put(TAG_MSG_TYPE, "text");
+        json.put(TAG_AGENTID, Constants.WX_AGENT_ID);
         json.put("text", body);
 
         String sendStr = json.toJSONString();

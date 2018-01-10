@@ -5,8 +5,6 @@ package com.qiyukf.openapi.controller;
  */
 public class Constants {
 
-  /*  public static final String WX_APP_ID = "YOUR_WEIXIN_APP_ID";
-    public static final String WX_APP_SECRET = "ZqTfsC-M2Iv8DeuphuaauI2QxzhpFFNCMr1tqGTgwCM";*/
     public static final String WX_TOKEN = "zhouqingyu";
     public static final String WX_RET_SUCCESS = "success";
     public static final String WX_MSG_URL = "https://qyapi.weixin.qq.com/cgi-bin/message/send";
@@ -15,6 +13,6 @@ public class Constants {
     public static final String WX_ENCODING_AESKEY = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG";
     public static final String WX_CORP_SECRET = "ZqTfsC-M2Iv8DeuphuaauI2QxzhpFFNCMr1tqGTgwCM";
 
-    static final String QIYU_APP_KEY = "YOUR_QIYU_APP_KEY";
-    static final String QIYU_APP_SECRET = "YOUR_QIYU_APP_SECRET";
+    static final String QIYU_APP_KEY = "065f70b3c5e1e7e35c7b269af3427d7e";
+    static final String QIYU_APP_SECRET = "pmiMITDS871DEghh7komcpdgwr2bg895j";
 }

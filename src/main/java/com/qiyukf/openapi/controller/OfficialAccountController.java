@@ -190,6 +190,8 @@ public class OfficialAccountController {
                         wxMessageService.replyText(fromUser, "没有客服在线");
                     } else if (result.getCode() == 14006) { // 需要排队
                         wxMessageService.replyText(fromUser, "客服忙，请等待，你前面还有 " + (result.getCount() + 1) + " 位");
+                    } else if (result.getCode() == 14515) {
+                        wxMessageService.replyText(fromUser, "没有权限，请购买专业版七鱼客服");
                     }
                     return true;
                 } catch (Exception e) {

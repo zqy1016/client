@@ -123,7 +123,6 @@ public class SessionClient {
      */
     public CommonResult forwardWxMessage(Element root, String accessToken) throws IOException {
         // 这里就直接使用fromUserName作为userId了。
-        // 如果同时有多个公众号，又需要区分的话，可以考虑在这里组合上appId一起使用。
         String fromUserName = xmlTextContent(root, "FromUserName");
         String msgType = xmlTextContent(root, "MsgType");
 

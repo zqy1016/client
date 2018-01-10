@@ -35,6 +35,7 @@ public class WXAuthService {
         if (expireTime < System.currentTimeMillis()) {
             updateAccessTokenFromWx();
         }
+        logger.debug("accessToken is updated from wx,expireTime is " + expireTime);
         return accessToken;
     }
 
@@ -42,7 +43,7 @@ public class WXAuthService {
         if (!fetching.compareAndSet(false, true)) {
             return;
         }
-        String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s";
+        String url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%s&corpsecret=%s";
         url = String.format(url, Constants.WX_CORP_ID, Constants.WX_CORP_SECRET);
         try {
             String ret = HttpClientPool.getInstance().get(url);

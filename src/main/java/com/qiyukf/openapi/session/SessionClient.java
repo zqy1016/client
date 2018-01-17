@@ -139,7 +139,7 @@ public class SessionClient {
             if (msgType.equals("image")) {
                 url = xmlTextContent(root, "PicUrl");
                 int[] size = MediaUtil.querySize(new ByteArrayInputStream(buffer));
-                return sendImageMessage(fromUserName, url, md5, buffer.length, size[0], size[1]);
+                return sendImageMessage(fromUserName, url, md5, buffer.length, size[1], size[0]);
             } else {
                 url = sendFile(md5, base64);
                 String format = xmlTextContent(root, "Format");

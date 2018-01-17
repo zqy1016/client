@@ -89,7 +89,6 @@ public class HttpClientPool {
             builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
             builder.addBinaryBody("file" ,bytes, ContentType.DEFAULT_BINARY, fileName);
             post.setEntity(builder.build());
-            post.setHeader("Content-Type", ContentType.MULTIPART_FORM_DATA.toString());
             HttpResponse response = client.execute(post);
             return readResponse(response);
 

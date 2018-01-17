@@ -31,6 +31,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Async HTTP request controller。
@@ -61,6 +63,8 @@ public class OfficialAccountController {
 
     @Autowired
     private QiyuSessionService qiyuSessionService;
+
+    private Map<String, String> testHashMap = new HashMap<>();
 
     /**
      * 处理来自七鱼的HTTP请求
@@ -114,7 +118,7 @@ public class OfficialAccountController {
                 String msg = StringUtil.isToString(is);
                 //解密消息
                 String sMsg = wxcpt.DecryptMsg(signature, timestamp, nonce, msg);
-                logger.debug("msg content" + sMsg);
+                logger.debug("receive wechat:" + sMsg);
                 // 分离处理消息
                 return parseWxMessage(sMsg);
             } else {
@@ -174,7 +178,7 @@ public class OfficialAccountController {
     private boolean shouldIntercept(String fromUser, String msgType, Element root) {
         if ("text".equals(msgType)) {
             String content = xmlTextContent(root, "Content");
-            if (("RG".equalsIgnoreCase(content) || "人工".equals(content)) && !sessionManager.isInSession(fromUser)) {
+            if (("RG".equalsIgnoreCase(content) || "人工".equals(content)|| "人工客服".equals(content)) && !sessionManager.isInSession(fromUser)) {
                 //如果fromUser不存在于session中，并且消息内容为RG或人工，则进入请求分配人工客服处理逻辑
                 ApplyStaffInfo staffInfo = new ApplyStaffInfo();
                 staffInfo.setUid(fromUser);
@@ -183,12 +187,12 @@ public class OfficialAccountController {
                 staffInfo.setFromTitle("公众号名字");
                 try {
                     ApplyStaffResult result = qiyuSessionService.applyStaff(staffInfo);
-                    logger.debug("ApplyStaffResult: " + result.getCode() + ", message:" + result.getMessage() + ", count: " + result.getCount());
                     if (result.getCode() == 200) {
                         sessionManager.onSessionStart(result.getSession());
-                    } else if(result.getCode() == 14005) { // 没有客服在线
+                        wxMessageService.replyText(fromUser, result.getMessage());
+                    } else if(result.getCode() == 14005) {
                         wxMessageService.replyText(fromUser, "没有客服在线");
-                    } else if (result.getCode() == 14006) { // 需要排队
+                    } else if (result.getCode() == 14006) { 
                         wxMessageService.replyText(fromUser, "客服忙，请等待，你前面还有 " + (result.getCount() + 1) + " 位");
                     } else if (result.getCode() == 14515) {
                         wxMessageService.replyText(fromUser, "没有权限，请购买专业版七鱼客服");
@@ -248,11 +252,6 @@ public class OfficialAccountController {
 
             final Element root = document.getDocumentElement();
 
-//            final String msgType = xmlTextContent(root, "MsgType");
-//
-//            String accessToken = new WXAuthService().queryAccessToken();
-//            CommonResult result = new QiyuSessionService().forwardWxMessage(root, accessToken);
-//            System.out.println(result);
         } catch (Exception e) {
             e.printStackTrace();
         }

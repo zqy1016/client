@@ -14,7 +14,6 @@ public class QiyuPushCheckSum {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("sha1");
             messageDigest.update(content.getBytes());
-            System.out.println("time:" + time);
             return getFormattedText(messageDigest.digest());
         } catch (Exception e) {
             throw new RuntimeException(e);

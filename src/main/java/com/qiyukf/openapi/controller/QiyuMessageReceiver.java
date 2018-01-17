@@ -34,7 +34,8 @@ public class QiyuMessageReceiver extends ResponseParser {
             @Override
             public void run() {
                 try {
-                    wxMessageService.replyText(message.getUid(), message.getContent().toString());
+//                    wxMessageService.replyText(message.getUid(), message.getContent().toString());
+                    wxMessageService.handleMessage(message.getUid(), message.getContent().toString(),message.getMsgType());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

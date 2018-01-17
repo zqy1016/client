@@ -53,10 +53,16 @@ public class WXUserService {
 
     private void updateWxUserToQiyu(String openId, JSONObject wxUser) {
         JSONArray crm = new JSONArray();
-        crm.add(item(null, "real_name", wxUser.getString("nickname")));
-        crm.add(item("性别", "sex", wxUser.getString("sex")));
-        crm.add(item("地址", "addr", wxUser.getString("province") + "-" + wxUser.getString("city")));
-        crm.add(item("备注", "remark", wxUser.getString("remark")));
+        crm.add(item(null, "real_name", wxUser.getString("name")));
+        crm.add(item(null, "mobile_phone", wxUser.getString("mobile")));
+        crm.add(item(null, "email", wxUser.getString("email")));
+        crm.add(item("职位", "position", wxUser.getString("position")));
+        String gender = wxUser.getString("gender");
+        if (gender.equals("1")){
+            crm.add(item("性别", "sex", "男"));
+        }else if (gender.equals("2")){
+            crm.add(item("性别", "sex", "女"));
+        }
         try {
             CommonResult result = qiyuSessionService.updateCrmInfo(openId, crm);
             logger.debug("update crm " + openId + " result: " + result);

@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -21,22 +23,25 @@ public class WXAuthService {
 
     private static Logger logger = Logger.getLogger(WXAuthService.class);
 
-    private String accessToken;
+//    private String accessToken;
 
-    private long expireTime;
+//    private long expireTime;
 
     private AtomicBoolean fetching = new AtomicBoolean(false);
+
+    //这里将token使用HashMap存下来，无需使用缓存
+    private Map<String, String> tokenMap = new HashMap<>();
+
 
     /**
      * 获取第三方公众号的access token
      * @return 第三方公众号的access token
      */
     public String queryAccessToken() {
-        if (expireTime < System.currentTimeMillis()) {
+        if (tokenMap.get("expireTime") == null || Long.parseLong(tokenMap.get("expireTime")) < System.currentTimeMillis()){
             updateAccessTokenFromWx();
         }
-        logger.debug("accessToken is updated from wx,expireTime is " + expireTime);
-        return accessToken;
+        return tokenMap.get("accessToken");
     }
 
     private void updateAccessTokenFromWx() {
@@ -48,8 +53,8 @@ public class WXAuthService {
         try {
             String ret = HttpClientPool.getInstance().get(url);
             JSONObject json = JSONObject.parseObject(ret);
-            accessToken = json.getString("access_token");
-            expireTime = System.currentTimeMillis() + json.getIntValue("expires_in");
+            tokenMap.put("expireTime",String.valueOf(System.currentTimeMillis() + json.getIntValue("expires_in") * 1000));
+            tokenMap.put("accessToken",json.getString("access_token"));
         } catch (IOException e) {
             logger.debug("query accessToken error: " + e);
         } finally {

@@ -43,7 +43,6 @@ public class SessionClient {
      * @throws IOException
      */
     public ApplyStaffResult applyStaff(ApplyStaffInfo staffInfo) throws IOException {
-        System.out.println(JSONObject.toJSONString(staffInfo));
         JSONObject res = send("openapi/event/applyStaff", JSONObject.toJSONString(staffInfo));
 
         if (res != null) {
@@ -136,12 +135,13 @@ public class SessionClient {
             }
             String md5 = MD5.md5(buffer);
             String base64 = Base64.encodeBase64String(buffer);
-            String url = sendFile(md5, base64);
-
+            String url;
             if (msgType.equals("image")) {
+                url = xmlTextContent(root, "PicUrl");
                 int[] size = MediaUtil.querySize(new ByteArrayInputStream(buffer));
                 return sendImageMessage(fromUserName, url, md5, buffer.length, size[0], size[1]);
             } else {
+                url = sendFile(md5, base64);
                 String format = xmlTextContent(root, "Format");
                 long duration;
                 if ("amr".equalsIgnoreCase(format)) {
@@ -270,7 +270,7 @@ public class SessionClient {
     }
 
     private byte[] downloadWxFile(String mediaId, String accessToken) throws IOException {
-        String url = String.format("https://api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s", accessToken, mediaId);
+        String url = String.format("https://qyapi.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s", accessToken, mediaId);
         return HttpClientPool.getInstance().downloadFile(url, 30 * 1000);
     }
 

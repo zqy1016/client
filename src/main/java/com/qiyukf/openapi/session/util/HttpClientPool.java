@@ -18,9 +18,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.charset.CodingErrorAction;
@@ -82,6 +80,24 @@ public class HttpClientPool {
             post.releaseConnection();
         }
     }
+
+    public String uploadFileToWx(String url, byte[] bytes, String fileName) throws IOException {
+        HttpPost post = new HttpPost(url);
+
+        try {
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+            builder.addBinaryBody("file" ,bytes, ContentType.DEFAULT_BINARY, fileName);
+            post.setEntity(builder.build());
+            post.setHeader("Content-Type", ContentType.MULTIPART_FORM_DATA.toString());
+            HttpResponse response = client.execute(post);
+            return readResponse(response);
+
+        } finally {
+            post.releaseConnection();
+        }
+    }
+
 
     public byte[] downloadFile(String url, int timeout) throws IOException {
         HttpGet get = new HttpGet(url);
